@@ -1,0 +1,68 @@
+@extends('layouts.app')
+
+@section('content')
+    <section class="content-header">
+        <h1>
+            Cuartel
+        </h1>
+    </section>
+    <div class="content">
+        <div class="box box-primary">
+            <div class="box-body">
+                <div class="row" style="padding-left: 20px">
+                    @include('stations.show_fields')
+                </div>
+                <a href="%7b%21%21%20route(%27stations.html" class="btn btn-default">Atrás</a>
+            </div>
+        </div>
+    </div>
+@endsection
+
+@push('scripts')
+    <script type="text/javascript">
+        $('#li_stations').addClass('active');
+        var position = [{!! $position[0] !!}, {!! $position[1] !!}];
+
+        // Maps
+        var iconFeatures=[];
+        var iconFeature = new ol.Feature({
+            geometry: new ol.geom.Point(ol.proj.transform(position, 'EPSG:4326','EPSG:3857'))
+        });
+
+        iconFeatures.push(iconFeature);
+
+        var vectorSource = new ol.source.Vector({
+            features: iconFeatures //add an array of features
+        });
+
+        var iconStyle = new ol.style.Style({
+            image: new ol.style.Icon(/** @type {olx.style.IconOptions} */ ({
+                anchor: [0.5, 32],
+                anchorXUnits: 'fraction',
+                anchorYUnits: 'pixels',
+                src: "{{URL::asset('Images/Icons/alarm-32.png')}}"
+            }))
+        });
+
+        var vectorLayer = new ol.layer.Vector({
+            source: vectorSource,
+            style: iconStyle
+        });
+
+        var map = new ol.Map({
+            target: document.getElementById('mapid'),
+            layers: [
+                new ol.layer.Tile({
+                    source: ("{!! env('URL_MAP') !!}" == '' ? new ol.source.OSM() : new ol.source.TileJSON({url: "{!! env('URL_MAP') !!}", crossOrigin: 'eric'}))
+                }),
+                vectorLayer
+            ],
+            view: new ol.View({
+                center: ol.proj.fromLonLat(position),
+                minZoom: 6,
+                zoom: 16
+            })
+        });
+
+    </script>
+@endpush

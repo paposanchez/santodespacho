@@ -1,0 +1,170 @@
+@extends('layouts.app')
+
+@section('content')
+    <section class="content-header">
+        <h1>
+            Cuartel
+        </h1>
+   </section>
+   <div class="content">
+       @include('adminlte-templates::common.errors')
+       <div class="box box-primary">
+           <div class="box-body">
+               <div class="row">
+                   {!! Form::model($station, ['route' => ['stations.update', $station->id], 'method' => 'patch', 'id' => 'form1','enctype' => 'multipart/dorm-data', 'files' => true]) !!}
+
+                        @include('stations.fields')
+
+                   {!! Form::close() !!}
+               </div>
+           </div>
+       </div>
+   </div>
+@endsection
+
+@push('scripts')
+    <script src="%7b%7bURL__asset(%27/js/drag_element.html"></script>
+    <script type="text/javascript">
+        $('#li_stations').addClass('active');
+        var position = [{!! $position[0] !!}, {!! $position[1] !!}];
+
+        // Maps
+        var iconFeatures=[];
+        var iconFeature = new ol.Feature({
+            geometry: new ol.geom.Point(ol.proj.transform(position, 'EPSG:4326','EPSG:3857'))
+        });
+
+        iconFeatures.push(iconFeature);
+
+        var vectorSource = new ol.source.Vector({
+            features: iconFeatures //add an array of features
+        });
+
+        var iconStyle = new ol.style.Style({
+            image: new ol.style.Icon(/** @type {olx.style.IconOptions} */ ({
+                anchor: [0.5, 32],
+                anchorXUnits: 'fraction',
+                anchorYUnits: 'pixels',
+                // src: "{{URL::asset('Images/Icons/marker-32.png')}}"
+                src: "{{URL::asset('Images/Icons/alarm-32.png')}}"
+            }))
+        });
+
+        var vectorLayer = new ol.layer.Vector({
+            source: vectorSource,
+            style: iconStyle
+        });
+
+        var container = document.getElementById('popup');
+        // var closer = document.getElementById('popup-closer');
+        var overlay = new ol.Overlay({
+            element: container,
+            autoPan: true,
+            autoPanAnimation: {
+            duration: 2000
+            }
+        });
+        // closer.onclick = function() {
+        //     overlay.setPosition(undefined);
+        //     closer.blur();
+        //     return false;
+        // };
+
+        var map = new ol.Map({
+            interactions: ol.interaction.defaults().extend([new app.Drag()]),
+            target: document.getElementById('mapid'),
+            layers: [
+                new ol.layer.Tile({
+                    source: ("{!! env('URL_MAP') !!}" == '' ? new ol.source.OSM() : new ol.source.TileJSON({url: "{!! env('URL_MAP') !!}", crossOrigin: 'eric'}))
+                }),
+                vectorLayer
+            ],
+            overlays: [overlay],
+            view: new ol.View({
+                center: ol.proj.fromLonLat(position),
+                minZoom: 6,
+                zoom: 16
+            })
+        });
+
+        $('#btn_change_position').on('click', function () {
+            position[0] = Number($('#popup-input-position-lon').val());
+            position[1] = Number($('#popup-input-position-lat').val());
+            overlay.setPosition(undefined);
+        });
+
+        $('#btn_cancel_position').on('click', function () {
+            lonlat =ol.proj.transform(position, 'EPSG:4326',   'EPSG:3857'); 
+            var feature =  new ol.Feature({
+                geometry: new ol.geom.Point(lonlat)
+            });
+
+            vectorLayer.getSource().clear();
+            vectorLayer.getSource().addFeature(feature);
+            overlay.setPosition(undefined);
+        });
+
+        $("#form1").submit(function () {
+            $('.btn-confirm').attr('disabled','');
+            $('#span_error').remove()
+            $('#footer_form').removeClass('has-error');
+            var input = $("<input>")
+                .attr("name", "position").val(JSON.stringify(position));
+            $("form").append(input);
+            input.hide();
+            return true;
+        });
+
+        $('#btn_add_restriction').on('click', function () {
+            $('#div_restrictions').append("<div class='row form-group'>    <div class='col-sm-3'>        <select class='form-control input-sm' name='category1[]'>            <option value=''>Seleccione Categoría</option>            @foreach ($station->categories as $item)                <option value='{{$item->id}}'>{{$item->name}}</option>            @endforeach        </select>    </div>    <div class='col-sm-3'>        <select class='form-control input-sm' name='category2[]'>            <option value=''>Seleccione Categoría</option>            @foreach ($station->categories as $item)                <option value='{{$item->id}}'>{{$item->name}}</option>            @endforeach        </select>    </div>    <div class='col-sm-2'>        <input class='form-control input-sm' min='0' type='number' name='minutes[]' id='minutes' placeholder='Minutos'>    </div><button type='button' class='btn btn-xs btn-danger' title='Eliminar' onclick='$(this).parent().remove()'><i class='fa fa-close'></i></button></div>");
+        });
+
+    </script>
+@endpush
+
+@push('styles')
+<style>
+      .ol-popup {
+        position: absolute;
+        background-color: white;
+        -webkit-filter: drop-shadow(0 1px 4px rgba(0,0,0,0.2));
+        filter: drop-shadow(0 1px 4px rgba(0,0,0,0.2));
+        padding: 15px;
+        border-radius: 10px;
+        border: 1px solid #cccccc;
+        bottom: 12px;
+        left: -50px;
+        min-width: 200px;
+      }
+      .ol-popup:after, .ol-popup:before {
+        top: 100%;
+        border: solid transparent;
+        content: " ";
+        height: 0;
+        width: 0;
+        position: absolute;
+        pointer-events: none;
+      }
+      .ol-popup:after {
+        border-top-color: white;
+        border-width: 10px;
+        left: 48px;
+        margin-left: -10px;
+      }
+      .ol-popup:before {
+        border-top-color: #cccccc;
+        border-width: 11px;
+        left: 48px;
+        margin-left: -11px;
+      }
+      .ol-popup-closer {
+        text-decoration: none;
+        position: absolute;
+        top: 2px;
+        right: 8px;
+      }
+      .ol-popup-closer:after {
+        content: "✖";
+      }
+    </style>
+@endpush

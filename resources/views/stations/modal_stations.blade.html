@@ -1,0 +1,24 @@
+<div class="modal-dialog">
+    <div class="modal-content">
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+            <h4 class="modal-title" id="myModalLabel">Cambio de Estado</h4>
+        </div>
+        <div class="modal-body" id="contenido-modal">
+            <input type="text" id="vehicle_modal_change_status" class="form-control" style="display: none;" value="{{$vehicle->id}}">
+            <input type="text" id="name_modal_change_status" class="form-control" style="display: none;" value="{{$vehicle->name}}">
+            <label for="code_modal_change_status">Estado</label>
+            <input type="text" id="code_modal_change_status" placeholder="Codigo" class="form-control" readonly="" value="{{$status->code}}">
+            <br><label for="station_modal_change_status">Cuartel</label>
+            <select name="station_modal_change_status" id="station_modal_change_status" class="form-control">
+                @foreach($stations as $item)
+                    <option value="{{$item->id}}" {{$vehicle->id_station==$item->id ? 'selected' : ''}}>{{$item->name}}</option>
+                @endforeach
+            </select>            
+        </div>
+        <div class="modal-footer">
+            <button type="button" id="btn_save_modal_change_status" class="btn btn-success" onclick="btn_save_modal_change_status()">Guardar</button>
+            <button type="button" class="btn btn-default pull-left" data-dismiss="modal">Cerrar</button>
+        </div>
+    </div>
+</div>
