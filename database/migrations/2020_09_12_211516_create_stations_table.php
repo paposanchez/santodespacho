@@ -24,6 +24,7 @@ class CreateStationsTable extends Migration
             $table->unsignedBigInteger('idfire_departament');
             $table->foreign('idfire_departament')->references('id')->on('fire_departaments');
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

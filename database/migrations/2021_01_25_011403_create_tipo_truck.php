@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateFireDepartamentsTable extends Migration
+class CreateTipoTruck extends Migration
 {
     /**
      * Run the migrations.
@@ -13,11 +13,10 @@ class CreateFireDepartamentsTable extends Migration
      */
     public function up()
     {
-        Schema::create('fire_departaments', function (Blueprint $table) {
+        Schema::create('tipo_truck', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
-            $table->string('logo');
-            $table->date('fundacion');
+            $table->string('nombre');
+            $table->string('descripcion');
             $table->softDeletes();
             $table->timestamps();
         });
@@ -30,6 +29,6 @@ class CreateFireDepartamentsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('fire_departaments');
+        Schema::dropIfExists('tipo_truck');
     }
 }

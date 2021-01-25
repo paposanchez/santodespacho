@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateEmergencyCodesTable extends Migration
+class CreateTruck extends Migration
 {
     /**
      * Run the migrations.
@@ -13,13 +13,19 @@ class CreateEmergencyCodesTable extends Migration
      */
     public function up()
     {
-        Schema::create('emergency_codes', function (Blueprint $table) {
+        Schema::create('truck', function (Blueprint $table) {
             $table->id();
-            $table->string('code');
             $table->string('description');
-            $table->string('voceo_clave');
+            $table->date('ano');
+            $table->string('marca');
+            $table->string('modelo');
+            $table->string('motor');
+            $table->string('chasis');
             $table->softDeletes();
+            $table->unsignedBigInteger('tipo_id');
+            $table->foreign('tipo_id')->references('id')->on('tipo_truck');
             $table->timestamps();
+
         });
     }
 
@@ -30,6 +36,6 @@ class CreateEmergencyCodesTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('emergency_codes');
+        Schema::dropIfExists('truck');
     }
 }

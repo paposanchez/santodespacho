@@ -1,7 +1,5 @@
 @extends('layouts.admin')
 
-
-
 @section('content')
 
 <div class="card">
@@ -60,7 +58,7 @@
                           </i>
                           Ver
                       </a>
-                      <a class="btn btn-info btn-sm" href="#">
+                      <a class="btn btn-info btn-sm" href="../admin/code/{{ $station->id }}/edit">
                           <i class="fas fa-pencil-alt">
                           </i>
                           Editar
